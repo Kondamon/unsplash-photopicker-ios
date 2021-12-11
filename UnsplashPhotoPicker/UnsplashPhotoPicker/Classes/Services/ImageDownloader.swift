@@ -25,6 +25,10 @@ class ImageDownloader {
             completion(image, true)
             return
         }
+        
+        let config = URLSessionConfiguration.default
+        config.urlCache = cache
+        let session = URLSession(configuration: config)
 
         imageDataTask = URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
             guard let strongSelf = self else { return }
