@@ -39,7 +39,7 @@ public struct UnsplashPhotoPickerConfiguration {
     let apiURL = "https://api.unsplash.com/"
 
     /// The Unsplash editorial collection id.
-    let editorialCollectionId = "317099"
+    public var editorialCollectionId = "317099"
 
     /**
      Initializes an `UnsplashPhotoPickerConfiguration` object with optionally customizable behaviors.
@@ -47,6 +47,7 @@ public struct UnsplashPhotoPickerConfiguration {
      - parameter accessKey:               Your application’s access key.
      - parameter secretKey:               Your application’s secret key.
      - parameter query:                   A search query.
+     - parameter collectionId:            Collection id to be displayed (default editorial collection id)
      - parameter allowsMultipleSelection: Controls whether the picker allows multiple or single selection.
      - parameter memoryCapacity:          The memory capacity used by the cache.
      - parameter diskCapacity:            The disk capacity used by the cache.
@@ -54,12 +55,14 @@ public struct UnsplashPhotoPickerConfiguration {
     public init(accessKey: String,
                 secretKey: String,
                 query: String? = nil,
+                collectionId: String = "317099",
                 allowsMultipleSelection: Bool = false,
                 memoryCapacity: Int = defaultMemoryCapacity,
                 diskCapacity: Int = defaultDiskCapacity) {
         self.accessKey = accessKey
         self.secretKey = secretKey
         self.query = query
+        self.editorialCollectionId = collectionId
         self.allowsMultipleSelection = allowsMultipleSelection
         self.memoryCapacity = memoryCapacity
         self.diskCapacity = diskCapacity
