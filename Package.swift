@@ -17,7 +17,7 @@ let package = Package(
             name: "UnsplashPhotoPicker",
             dependencies: [],
             path: "UnsplashPhotoPicker/UnsplashPhotoPicker",
-            exclude: ["Info.plist", "UnsplashPhotoPicker.h"]
+            exclude: ["Info.plist", "Classes/UnsplashPhotoPicker.h"]
         )
     ]
 )
