@@ -25,6 +25,13 @@ public protocol UnsplashPhotoPickerDelegate: AnyObject {
      - parameter photoPicker: The `UnsplashPhotoPicker` instance responsible for selecting the photos.
      */
     func unsplashPhotoPickerDidCancel(_ photoPicker: UnsplashPhotoPicker)
+    
+    /**
+     Notifies the delegate that UnsplashPhotoPicker has scrolled
+
+     - parameter scrollView: The view for scrolling.
+     */
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
 }
 
 /// `UnsplashPhotoPicker` is an object that can be used to select photos from Unsplash.
@@ -53,7 +60,31 @@ public class UnsplashPhotoPicker: UINavigationController {
 
         photoPickerViewController.delegate = self
     }
-
+    
+    public func setSearchQuery(_ text: String) {
+      //  photoPickerViewController.setSearchText(text)
+    }
+    
+    public func showSearchBar(_ forceShowingSearch: Bool, hideNaviagationBarDuringSearching: Bool) {
+        self.setNavigationBarHidden(true, animated: false)
+        photoPickerViewController.showSearchBar(forceShowingSearch: forceShowingSearch,
+                                                hideNaviagationBarDuringSearching: hideNaviagationBarDuringSearching)
+        
+    
+//        self.navigationBar.setBackgroundImage(UIImage(), for: .default)
+//        self.navigationBar.shadowImage = UIImage()
+//        self.navigationBar.barStyle = UIBarStyle.default
+//
+//        self.navigationBar.backgroundColor = .clear
+//
+//        self.navigationBar.isTranslucent = true
+    }
+    
+    public func setCollectionId(_ collectionId:String) {
+        let dataSource = PhotosDataSourceFactory.collection(identifier: collectionId).dataSource
+        photoPickerViewController.dataSource = dataSource
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,11 +114,17 @@ extension UnsplashPhotoPicker: UnsplashPhotoPickerViewControllerDelegate {
     func unsplashPhotoPickerViewController(_ viewController: UnsplashPhotoPickerViewController, didSelectPhotos photos: [UnsplashPhoto]) {
         trackDownloads(for: photos)
         photoPickerDelegate?.unsplashPhotoPicker(self, didSelectPhotos: photos)
+        guard Configuration.shared.automaticallyDismissesViewController else { return }
         dismiss(animated: true, completion: nil)
     }
 
     func unsplashPhotoPickerViewControllerDidCancel(_ viewController: UnsplashPhotoPickerViewController) {
         photoPickerDelegate?.unsplashPhotoPickerDidCancel(self)
+        guard Configuration.shared.automaticallyDismissesViewController else { return }
         dismiss(animated: true, completion: nil)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        photoPickerDelegate?.scrollViewDidScroll(scrollView)
     }
 }

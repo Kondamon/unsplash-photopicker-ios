@@ -14,10 +14,14 @@ class ImageCache {
         let diskPath = "unsplash"
 
         if #available(iOS 13.0, *) {
+            let cachesDirectory = FileManager.default.urls(for: .cachesDirectory,
+                                                              in: .userDomainMask).first
+            let cacheURL = cachesDirectory?.appendingPathComponent(diskPath,
+                                                                  isDirectory: true)
             return URLCache(
                 memoryCapacity: Configuration.shared.memoryCapacity,
                 diskCapacity: Configuration.shared.diskCapacity,
-                directory: URL(fileURLWithPath: diskPath, isDirectory: true)
+                directory: cacheURL ?? URL(fileURLWithPath: diskPath, isDirectory: true)
             )
         } else {
             #if !targetEnvironment(macCatalyst)

@@ -11,9 +11,16 @@ import UIKit
 protocol UnsplashPhotoPickerViewControllerDelegate: AnyObject {
     func unsplashPhotoPickerViewController(_ viewController: UnsplashPhotoPickerViewController, didSelectPhotos photos: [UnsplashPhoto])
     func unsplashPhotoPickerViewControllerDidCancel(_ viewController: UnsplashPhotoPickerViewController)
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
 }
 
 class UnsplashPhotoPickerViewController: UIViewController {
+    
+    /// Search bar not on navigationbar, but directly added in view
+    private var hasManuallyAddedSearchBar = false
+    
+    /// To adjust top inset to prevent clash with manually added search bar
+    private var collectionViewTopLayoutConstraint: NSLayoutConstraint?
 
     // MARK: - Properties
 
@@ -41,6 +48,14 @@ class UnsplashPhotoPickerViewController: UIViewController {
         searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "search.placeholder".localized()
         searchController.searchBar.autocapitalizationType = .none
+        // white search bar background
+        searchController.searchBar.searchBarStyle = .default
+        searchController.searchBar.backgroundImage = UIImage()
+        searchController.searchBar.isTranslucent = false
+        if #available(iOS 13.0, *) {
+            searchController.searchBar.barTintColor = .systemBackground
+        }
+       
         return searchController
     }()
 
@@ -84,6 +99,7 @@ class UnsplashPhotoPickerViewController: UIViewController {
         didSet {
             oldValue.cancelFetch()
             dataSource.delegate = self
+            refresh()
         }
     }
 
@@ -178,16 +194,17 @@ class UnsplashPhotoPickerViewController: UIViewController {
         definesPresentationContext = true
         extendedLayoutIncludesOpaqueBars = true
     }
-
+    
     private func setupCollectionView() {
         view.addSubview(collectionView)
-
+        let safe = view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leftAnchor.constraint(equalTo: view.leftAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
+        collectionViewTopLayoutConstraint = collectionView.topAnchor.constraint(equalTo: safe.topAnchor)
+        collectionViewTopLayoutConstraint?.isActive = true
     }
 
     private func setupSpinner() {
@@ -269,6 +286,28 @@ class UnsplashPhotoPickerViewController: UIViewController {
             dataSource = editorialDataSource
             searchText = nil
         }
+    }
+    
+    func showSearchBar(forceShowingSearch: Bool, hideNaviagationBarDuringSearching: Bool) {
+        guard !hasManuallyAddedSearchBar else {
+            searchController.searchBar.becomeFirstResponder()
+            return
+        }
+        
+        navigationItem.searchController = nil
+        let searchBar = searchController.searchBar
+        let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        searchController.searchBar.directionalLayoutMargins = directionalMargins
+        view.addSubview(searchBar)
+    
+        searchController.isActive = true
+        if forceShowingSearch {
+            searchController.searchBar.becomeFirstResponder()
+        } else {
+            searchController.searchBar.resignFirstResponder()
+        }
+        collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
+        hasManuallyAddedSearchBar = true
     }
 
     @objc func refresh() {
@@ -372,6 +411,7 @@ extension UnsplashPhotoPickerViewController: UIScrollViewDelegate {
         if searchController.searchBar.isFirstResponder {
             searchController.searchBar.resignFirstResponder()
         }
+        delegate?.scrollViewDidScroll(scrollView)
     }
 }
 
