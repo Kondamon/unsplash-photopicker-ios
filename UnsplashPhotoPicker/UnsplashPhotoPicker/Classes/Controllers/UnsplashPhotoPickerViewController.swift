@@ -16,6 +16,8 @@ protocol UnsplashPhotoPickerViewControllerDelegate: AnyObject {
 
 class UnsplashPhotoPickerViewController: UIViewController {
     
+    static let inset: CGFloat = 13.0
+    
     /// Search bar not on navigationbar, but directly added in view
     private var hasManuallyAddedSearchBar = false
     
@@ -69,7 +71,8 @@ class UnsplashPhotoPickerViewController: UIViewController {
         collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.reuseIdentifier)
         collectionView.register(PagingView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PagingView.reuseIdentifier)
         collectionView.contentInsetAdjustmentBehavior = .automatic
-        collectionView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        collectionView.layoutMargins = UIEdgeInsets(top: 0.0, left: UnsplashPhotoPickerViewController.inset,
+                                                    bottom: 0.0, right: UnsplashPhotoPickerViewController.inset)
         collectionView.backgroundColor = UIColor.photoPicker.background
         collectionView.allowsMultipleSelection = Configuration.shared.allowsMultipleSelection
         return collectionView
@@ -296,17 +299,21 @@ class UnsplashPhotoPickerViewController: UIViewController {
         
         navigationItem.searchController = nil
         let searchBar = searchController.searchBar
-        let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: UnsplashPhotoPickerViewController.inset,
+                                                         bottom: 0, trailing: UnsplashPhotoPickerViewController.inset)
         searchController.searchBar.directionalLayoutMargins = directionalMargins
         view.addSubview(searchBar)
     
-        searchController.isActive = true
+       // searchController.isActive = true
         if forceShowingSearch {
             searchController.searchBar.becomeFirstResponder()
         } else {
             searchController.searchBar.resignFirstResponder()
         }
-        collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            self?.collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
+        })
+        
         hasManuallyAddedSearchBar = true
     }
 

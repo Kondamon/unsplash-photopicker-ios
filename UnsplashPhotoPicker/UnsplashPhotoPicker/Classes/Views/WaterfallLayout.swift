@@ -13,12 +13,14 @@ protocol WaterfallLayoutDelegate: AnyObject {
 }
 
 class WaterfallLayout: UICollectionViewLayout {
+    
+    var spacing: CGFloat = UnsplashPhotoPickerViewController.inset
 
     // MARK: - Public properties
 
     weak var delegate: WaterfallLayoutDelegate?
 
-    var topInset: CGFloat = 16 {
+    lazy var topInset: CGFloat = spacing {
         didSet {
             invalidateLayout()
         }
@@ -45,7 +47,7 @@ class WaterfallLayout: UICollectionViewLayout {
     }
 
     private var itemSpacing: CGFloat {
-        return isSingleColumn ? 1 : 16
+        return isSingleColumn ? 1 : spacing
     }
 
     private var columnWidth: CGFloat {
@@ -196,7 +198,8 @@ class WaterfallLayout: UICollectionViewLayout {
 
     // MARK: - Utilities
 
-    class func numberOfColumns(for width: CGFloat, itemSpacing: CGFloat = 16, minimumWidth: CGFloat = 150) -> Int {
+    class func numberOfColumns(for width: CGFloat, itemSpacing: CGFloat = UnsplashPhotoPickerViewController.inset,
+                               minimumWidth: CGFloat = 150) -> Int {
         return Int(floor(width - itemSpacing) / (minimumWidth + itemSpacing))
     }
 
