@@ -32,6 +32,13 @@ public protocol UnsplashPhotoPickerDelegate: AnyObject {
      - parameter scrollView: The view for scrolling.
      */
     func scrollViewDidScroll(_ scrollView: UIScrollView)
+    
+    /**
+     Notifies the delegate that UnsplashPhotoPicker is searching for a certain term
+     - parameter term: The search term.
+     
+     */
+    func didSearch(_ term: String)
 }
 
 /// `UnsplashPhotoPicker` is an object that can be used to select photos from Unsplash.
@@ -126,5 +133,9 @@ extension UnsplashPhotoPicker: UnsplashPhotoPickerViewControllerDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         photoPickerDelegate?.scrollViewDidScroll(scrollView)
+    }
+    
+    func didSearch(_ term: String) {
+        photoPickerDelegate?.didSearch(term)
     }
 }

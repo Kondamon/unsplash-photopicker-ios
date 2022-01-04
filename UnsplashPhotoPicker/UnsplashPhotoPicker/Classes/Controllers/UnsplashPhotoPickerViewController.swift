@@ -12,6 +12,7 @@ protocol UnsplashPhotoPickerViewControllerDelegate: AnyObject {
     func unsplashPhotoPickerViewController(_ viewController: UnsplashPhotoPickerViewController, didSelectPhotos photos: [UnsplashPhoto])
     func unsplashPhotoPickerViewControllerDidCancel(_ viewController: UnsplashPhotoPickerViewController)
     func scrollViewDidScroll(_ scrollView: UIScrollView)
+    func didSearch(_ term: String)
 }
 
 class UnsplashPhotoPickerViewController: UIViewController {
@@ -397,6 +398,7 @@ extension UnsplashPhotoPickerViewController: UISearchBarDelegate {
         hideEmptyView()
         updateTitle()
         updateDoneButtonState()
+        delegate?.didSearch(text)
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
