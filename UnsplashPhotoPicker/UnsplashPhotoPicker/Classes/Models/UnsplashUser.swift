@@ -18,11 +18,11 @@ public struct UnsplashUser: Codable {
     }
 
     public enum LinkKind: String, Codable {
-        case `self`
-        case html
-        case photos
-        case likes
-        case portfolio
+        case selfKind = "self"
+        case html = "html"
+        case photos = "photos"
+        case likes = "likes"
+        case portfolio = "portfolio"
     }
 
     public let identifier: String
