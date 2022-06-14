@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Encapsulates configuration information for the behavior of UnsplashPhotoPicker.
 public struct UnsplashPhotoPickerConfiguration {
@@ -25,6 +26,9 @@ public struct UnsplashPhotoPickerConfiguration {
     
     /// Controls wheter the navigationController automatically dismisses after clicking on an image or done
     public var automaticallyDismissesViewController = true
+    
+    /// Color that is used for e.g. checkmark fills
+    public var fillColor = UIColor.systemBlue
 
     /// The memory capacity used by the cache.
     public var memoryCapacity = defaultMemoryCapacity

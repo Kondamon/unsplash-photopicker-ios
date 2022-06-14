@@ -30,6 +30,10 @@ class PhotoView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 10
+        gradientView.layer.cornerRadius = 10
+        
         accessibilityIgnoresInvertColors = true
         gradientView.setColors([
             GradientView.Color(color: .clear, location: 0),

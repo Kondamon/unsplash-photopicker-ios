@@ -22,7 +22,9 @@ class PhotoCell: UICollectionViewCell {
     }()
 
     private lazy var checkmarkView: CheckmarkView = {
-        return CheckmarkView()
+        let view = CheckmarkView()
+        view.tintColor = Configuration.shared.fillColor
+        return view
     }()
 
     override var isSelected: Bool {
