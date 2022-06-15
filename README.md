@@ -44,18 +44,19 @@ UnsplashPhotoPicker is a view controller. You present it to offer your users to 
 
 ### Swift Package Manager
 
-To integrate UnsplashPhotoPicker into your Xcode project using [Switf Package Manager](https://github.com/apple/swift-package-manager), open dependency manager through `File > Swift Packages > Add Package Dependency...`.
+To integrate UnsplashPhotoPicker into your Xcode project using [Swift Package Manager](https://github.com/apple/swift-package-manager), open dependency manager through `File > Swift Packages > Add Package Dependency...`.
 
 and insert repository URL:
 
-` https://github.com/unsplash/unsplash-photopicker-ios.git `
+`https://github.com/unsplash/unsplash-photopicker-ios.git`
 
 To add dependency in your own package, just specify it in dependencies of your `Package.swift`:
+
 ```swift
 .package(
   name: "UnsplashPhotoPicker",
   url: "https://github.com/unsplash/unsplash-photopicker-ios.git",
-  .upToNextMajor(from: "1.2.0")
+  .upToNextMajor(from: "1.3.0")
 )
 ```
 
@@ -64,7 +65,7 @@ To add dependency in your own package, just specify it in dependencies of your `
 To integrate UnsplashPhotoPicker into your Xcode project using [Carthage](https://github.com/Carthage/Carthage), specify it in your `Cartfile`:
 
 ```ogdl
-github "unsplash/unsplash-photopicker-ios" ~> 1.2
+github "unsplash/unsplash-photopicker-ios" ~> 1.3
 ```
 
 Run `carthage update` to build the framework and drag the built `UnsplashPhotoPicker.framework` into your Xcode project.
@@ -79,7 +80,7 @@ platform :ios, '12.1'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'UnsplashPhotoPicker', '~> 1.2'
+    pod 'UnsplashPhotoPicker', '~> 1.3'
 end
 ```
 
@@ -89,9 +90,9 @@ Then run `pod install`.
 
 If you prefer not to use any of the aforementioned dependency managers, you can integrate UnsplashPhotoPicker into your project manually as a [git submodule](https://git-scm.com/docs/git-submodule) by running the following command in the project's folder:
 
-  ```bash
-  $ git submodule add https://github.com/unsplash/unsplash-photopicker-ios.git
-  ```
+```bash
+$ git submodule add https://github.com/unsplash/unsplash-photopicker-ios.git
+```
 
 Drag the `UnsplashPhotoPicker.xcodeproj` file into your Xcode project, then drag the `UnsplashPhotoPicker.framework` to your target's "Embedded Binaries".
 
@@ -111,14 +112,16 @@ UnsplashPhotoPickerConfiguration(accessKey: String,
                                  memoryCapacity: Int,
                                  diskCapacity: Int)
 ```
-| Property                      | Type     | Optional/Required | Default |
-|-------------------------------|----------|-------------------|---------|
-| **`accessKey`**               | _String_ | Required          | N/A     |
-| **`secretKey`**               | _String_ | Required          | N/A     |
-| **`query`**                   | _String_ | Optional          | `nil`   |
-| **`allowsMultipleSelection`** | _Bool_   | Optional          | `false` |
-| **`memoryCapacity`**          | _Int_    | Optional          | `50`    |
-| **`diskCapacity`**            | _Int_    | Optional          | `100`   |
+
+| Property                      | Type                 | Optional/Required | Default |
+| ----------------------------- | -------------------- | ----------------- | ------- |
+| **`accessKey`**               | _String_             | Required          | N/A     |
+| **`secretKey`**               | _String_             | Required          | N/A     |
+| **`query`**                   | _String_             | Optional          | `nil`   |
+| **`allowsMultipleSelection`** | _Bool_               | Optional          | `false` |
+| **`memoryCapacity`**          | _Int_                | Optional          | `50`    |
+| **`diskCapacity`**            | _Int_                | Optional          | `100`   |
+| **`contentFilterLevel`**      | _ContentFilterLevel_ | Optional          | `.low`  |
 
 ### Presenting
 
@@ -139,7 +142,7 @@ protocol UnsplashPhotoPickerDelegate: class {
 
 MIT License
 
-Copyright (c) 2018-2019 Unsplash Inc.
+Copyright (c) 2018-2022 Unsplash Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
