@@ -12,6 +12,7 @@ class PhotoView: UIView {
 
     static var nib: UINib { return UINib(nibName: "PhotoView", bundle: Bundle.local) }
 
+    private var currentPhotoID: String?
     private var imageDownloader = ImageDownloader()
     private var screenScale: CGFloat { return UIScreen.main.scale }
 
@@ -42,6 +43,7 @@ class PhotoView: UIView {
     }
 
     func prepareForReuse() {
+        currentPhotoID = nil
         userNameLabel.text = nil
         imageView.backgroundColor = .clear
         imageView.image = nil
@@ -60,6 +62,7 @@ class PhotoView: UIView {
         self.showsUsername = showsUsername
         userNameLabel.text = photo.user.displayName
         imageView.backgroundColor = photo.color
+        currentPhotoID = photo.identifier
         downloadImage(with: photo)
     }
 
@@ -68,8 +71,10 @@ class PhotoView: UIView {
 
         let url = sizedImageURL(from: regularUrl)
 
+        let downloadPhotoID = photo.identifier
+
         imageDownloader.downloadPhoto(with: url, completion: { [weak self] (image, isCached) in
-            guard let strongSelf = self, strongSelf.imageDownloader.isCancelled == false else { return }
+            guard let strongSelf = self, strongSelf.currentPhotoID == downloadPhotoID else { return }
 
             if isCached {
                 strongSelf.imageView.image = image
