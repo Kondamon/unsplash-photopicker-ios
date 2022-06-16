@@ -108,6 +108,15 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UnsplashPhotoPickerDelegate
 extension ViewController: UnsplashPhotoPickerDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+    }
+    
+    func didSearch(_ term: String) {
+        
+    }
+    
     func unsplashPhotoPicker(_ photoPicker: UnsplashPhotoPicker, didSelectPhotos photos: [UnsplashPhoto]) {
         print("Unsplash photo picker did select \(photos.count) photo(s)")
 
