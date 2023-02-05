@@ -424,7 +424,7 @@ extension UnsplashPhotoPickerViewController: PagedDataSourceDelegate {
         let endIndex = startIndex + newPhotosCount
         var newIndexPaths = [IndexPath]()
         // crash fix, https://gist.github.com/radianttap/c06445d8cd24ed636a4f12fe5370a0c5
-        for index in startIndex..<endIndex where index < NSNotFound {
+        for index in startIndex..<endIndex where index < NSNotFound - 1 {
             newIndexPaths.append(IndexPath(item: index, section: 0))
         }
 
