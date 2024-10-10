@@ -428,6 +428,8 @@ extension UnsplashPhotoPickerViewController: PagedDataSourceDelegate {
             newIndexPaths.append(IndexPath(item: index, section: 0))
         }
 
+        guard newIndexPaths.count > 0 else { return }
+        
         DispatchQueue.main.async { [unowned self] in
             self.spinner.stopAnimating()
             self.hideEmptyView()
