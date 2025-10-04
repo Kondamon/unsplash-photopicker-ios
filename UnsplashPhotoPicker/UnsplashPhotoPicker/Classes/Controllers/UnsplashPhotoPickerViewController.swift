@@ -287,29 +287,36 @@ class UnsplashPhotoPickerViewController: UIViewController {
     }
     
     func showSearchBar(forceShowingSearch: Bool, hideNaviagationBarDuringSearching: Bool) {
-        guard !hasManuallyAddedSearchBar else {
-            searchController.searchBar.becomeFirstResponder()
-            return
-        }
-        
-        navigationItem.searchController = nil
-        let searchBar = searchController.searchBar
-        let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: UnsplashPhotoPickerViewController.inset,
-                                                         bottom: 0, trailing: UnsplashPhotoPickerViewController.inset)
-        searchController.searchBar.directionalLayoutMargins = directionalMargins
-        view.addSubview(searchBar)
-    
-       // searchController.isActive = true
-        if forceShowingSearch {
+        if #available(iOS 26.0, *) {
             searchController.searchBar.becomeFirstResponder()
         } else {
-            searchController.searchBar.resignFirstResponder()
+            guard !hasManuallyAddedSearchBar else {
+                searchController.searchBar.becomeFirstResponder()
+                return
+            }
+            
+            navigationItem.searchController = nil
+            let searchBar = searchController.searchBar
+            let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: UnsplashPhotoPickerViewController.inset,
+                                                             bottom: 0, trailing: UnsplashPhotoPickerViewController.inset)
+            searchController.searchBar.directionalLayoutMargins = directionalMargins
+            view.addSubview(searchBar)
+            
+            // searchController.isActive = true
+            if forceShowingSearch {
+                searchController.searchBar.becomeFirstResponder()
+            } else {
+                searchController.searchBar.resignFirstResponder()
+            }
+            
+            
+            UIView.animate(withDuration: 0.3, animations: { [weak self] in
+                self?.collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
+            })
+            
+            
+            hasManuallyAddedSearchBar = true
         }
-        UIView.animate(withDuration: 0.3, animations: { [weak self] in
-            self?.collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
-        })
-        
-        hasManuallyAddedSearchBar = true
     }
 
     @objc func refresh() {
