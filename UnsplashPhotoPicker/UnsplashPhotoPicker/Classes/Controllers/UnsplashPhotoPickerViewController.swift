@@ -16,12 +16,12 @@ protocol UnsplashPhotoPickerViewControllerDelegate: AnyObject {
 }
 
 class UnsplashPhotoPickerViewController: UIViewController {
-    
+
     static let inset: CGFloat = 13.0
-    
+
     /// Search bar not on navigationbar, but directly added in view
     private var hasManuallyAddedSearchBar = false
-    
+
     /// To adjust top inset to prevent clash with manually added search bar
     private var collectionViewTopLayoutConstraint: NSLayoutConstraint?
 
@@ -57,7 +57,7 @@ class UnsplashPhotoPickerViewController: UIViewController {
         if #available(iOS 13.0, *) {
             searchController.searchBar.barTintColor = .systemBackground
         }
-       
+
         return searchController
     }()
 
@@ -69,10 +69,12 @@ class UnsplashPhotoPickerViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.reuseIdentifier)
-        collectionView.register(PagingView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PagingView.reuseIdentifier)
+        collectionView.register(
+            PagingView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PagingView.reuseIdentifier)
         collectionView.contentInsetAdjustmentBehavior = .automatic
-        collectionView.layoutMargins = UIEdgeInsets(top: 0.0, left: UnsplashPhotoPickerViewController.inset,
-                                                    bottom: 0.0, right: UnsplashPhotoPickerViewController.inset)
+        collectionView.layoutMargins = UIEdgeInsets(
+            top: 0.0, left: UnsplashPhotoPickerViewController.inset,
+            bottom: 0.0, right: UnsplashPhotoPickerViewController.inset)
         collectionView.backgroundColor = UIColor.photoPicker.background
         collectionView.allowsMultipleSelection = Configuration.shared.allowsMultipleSelection
         return collectionView
@@ -173,8 +175,10 @@ class UnsplashPhotoPickerViewController: UIViewController {
     // MARK: - Setup
 
     private func setupNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     private func setupNavigationBar() {
@@ -196,14 +200,14 @@ class UnsplashPhotoPickerViewController: UIViewController {
         definesPresentationContext = true
         extendedLayoutIncludesOpaqueBars = true
     }
-    
+
     private func setupCollectionView() {
         view.addSubview(collectionView)
         let safe = view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
             collectionView.leftAnchor.constraint(equalTo: view.leftAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor)
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor),
         ])
         collectionViewTopLayoutConstraint = collectionView.topAnchor.constraint(equalTo: safe.topAnchor)
         collectionViewTopLayoutConstraint?.isActive = true
@@ -214,7 +218,7 @@ class UnsplashPhotoPickerViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             spinner.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: collectionView.centerYAnchor)
+            spinner.centerYAnchor.constraint(equalTo: collectionView.centerYAnchor),
         ])
     }
 
@@ -231,7 +235,7 @@ class UnsplashPhotoPickerViewController: UIViewController {
             emptyView.topAnchor.constraint(equalTo: view.topAnchor),
             emptyView.leftAnchor.constraint(equalTo: view.leftAnchor),
             emptyView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            emptyView.rightAnchor.constraint(equalTo: view.rightAnchor)
+            emptyView.rightAnchor.constraint(equalTo: view.rightAnchor),
         ])
     }
 
@@ -258,13 +262,15 @@ class UnsplashPhotoPickerViewController: UIViewController {
     @objc private func doneBarButtonTapped(sender: AnyObject?) {
         searchController.searchBar.resignFirstResponder()
 
-        let selectedPhotos = collectionView.indexPathsForSelectedItems?.reduce([], { (photos, indexPath) -> [UnsplashPhoto] in
-            var mutablePhotos = photos
-            if let photo = dataSource.item(at: indexPath.item) {
-                mutablePhotos.append(photo)
-            }
-            return mutablePhotos
-        })
+        let selectedPhotos = collectionView.indexPathsForSelectedItems?.reduce(
+            [],
+            { (photos, indexPath) -> [UnsplashPhoto] in
+                var mutablePhotos = photos
+                if let photo = dataSource.item(at: indexPath.item) {
+                    mutablePhotos.append(photo)
+                }
+                return mutablePhotos
+            })
 
         delegate?.unsplashPhotoPickerViewController(self, didSelectPhotos: selectedPhotos ?? [UnsplashPhoto]())
     }
@@ -285,7 +291,7 @@ class UnsplashPhotoPickerViewController: UIViewController {
             searchText = nil
         }
     }
-    
+
     func showSearchBar(forceShowingSearch: Bool, hideNaviagationBarDuringSearching: Bool) {
         if #available(iOS 26.0, *) {
             searchController.searchBar.becomeFirstResponder()
@@ -294,27 +300,28 @@ class UnsplashPhotoPickerViewController: UIViewController {
                 searchController.searchBar.becomeFirstResponder()
                 return
             }
-            
+
             navigationItem.searchController = nil
             let searchBar = searchController.searchBar
-            let directionalMargins = NSDirectionalEdgeInsets(top: 0, leading: UnsplashPhotoPickerViewController.inset,
-                                                             bottom: 0, trailing: UnsplashPhotoPickerViewController.inset)
+            let directionalMargins = NSDirectionalEdgeInsets(
+                top: 0, leading: UnsplashPhotoPickerViewController.inset,
+                bottom: 0, trailing: UnsplashPhotoPickerViewController.inset)
             searchController.searchBar.directionalLayoutMargins = directionalMargins
             view.addSubview(searchBar)
-            
+
             // searchController.isActive = true
             if forceShowingSearch {
                 searchController.searchBar.becomeFirstResponder()
             } else {
                 searchController.searchBar.resignFirstResponder()
             }
-            
-            
-            UIView.animate(withDuration: 0.3, animations: { [weak self] in
-                self?.collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
-            })
-            
-            
+
+            UIView.animate(
+                withDuration: 0.3,
+                animations: { [weak self] in
+                    self?.collectionViewTopLayoutConstraint?.constant = searchBar.frame.size.height - 10
+                })
+
             hasManuallyAddedSearchBar = true
         }
     }
@@ -347,8 +354,9 @@ class UnsplashPhotoPickerViewController: UIViewController {
 
     @objc func keyboardWillShowNotification(_ notification: Notification) {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.size,
-            let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
-                return
+            let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
+        else {
+            return
         }
 
         let bottomInset = keyboardSize.height - view.safeAreaInsets.bottom
@@ -436,8 +444,10 @@ extension UnsplashPhotoPickerViewController: PagedDataSourceDelegate {
         }
 
         guard newIndexPaths.count > 0 else { return }
-        
-        DispatchQueue.main.async { [unowned self] in
+
+        DispatchQueue.main.async { [weak self] in
+            // The picker may be dismissed while a fetch is in flight; `unowned` crashed here.
+            guard let self else { return }
             self.spinner.stopAnimating()
             self.hideEmptyView()
 
