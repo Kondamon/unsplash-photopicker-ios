@@ -350,6 +350,20 @@ class UnsplashPhotoPickerViewController: UIViewController {
         }
     }
 
+    /// Inserts exactly the items the data source holds beyond what the collection view shows,
+    /// so the count after the update always matches `numberOfItemsInSection`.
+    private func insertNewItems() {
+        let displayedCount = collectionView.numberOfItems(inSection: 0)
+        let itemCount = dataSource.items.count
+        guard collectionView.window != nil, displayedCount < itemCount else {
+            reloadData()
+            return
+        }
+
+        let newIndexPaths = (displayedCount..<itemCount).map { IndexPath(item: $0, section: 0) }
+        collectionView.insertItems(at: newIndexPaths)
+    }
+
     // MARK: - Notifications
 
     @objc func keyboardWillShowNotification(_ notification: Notification) {
@@ -424,41 +438,13 @@ extension UnsplashPhotoPickerViewController: PagedDataSourceDelegate {
     }
 
     func dataSource(_ dataSource: PagedDataSource, didFetch items: [UnsplashPhoto]) {
-        guard items.count > 0 else { return }
-        guard dataSource.items.count > 0 else {
-            DispatchQueue.main.async {
-                self.spinner.stopAnimating()
-                self.showEmptyView(with: .noResults)
-            }
+        // A replaced data source (e.g. the previous search) must not touch the collection view,
+        // which now shows `self.dataSource`. PagedDataSource calls back on the main thread.
+        guard dataSource === self.dataSource, items.count > 0 else { return }
 
-            return
-        }
-
-        let newPhotosCount = items.count
-        let startIndex = self.dataSource.items.count - newPhotosCount
-        let endIndex = startIndex + newPhotosCount
-        var newIndexPaths = [IndexPath]()
-        // crash fix, https://gist.github.com/radianttap/c06445d8cd24ed636a4f12fe5370a0c5
-        for index in startIndex..<endIndex where ((index < NSNotFound - 1_000) && index >= 0) {
-            newIndexPaths.append(IndexPath(item: index, section: 0))
-        }
-
-        guard newIndexPaths.count > 0 else { return }
-
-        DispatchQueue.main.async { [weak self] in
-            // The picker may be dismissed while a fetch is in flight; `unowned` crashed here.
-            guard let self else { return }
-            self.spinner.stopAnimating()
-            self.hideEmptyView()
-
-            let hasWindow = self.collectionView.window != nil
-            let collectionViewItemCount = self.collectionView.numberOfItems(inSection: 0)
-            if hasWindow && collectionViewItemCount < dataSource.items.count {
-                self.collectionView.insertItems(at: newIndexPaths)
-            } else {
-                self.reloadData()
-            }
-        }
+        spinner.stopAnimating()
+        hideEmptyView()
+        insertNewItems()
     }
 
     func dataSource(_ dataSource: PagedDataSource, fetchDidFailWithError error: Error) {

@@ -18,6 +18,11 @@ let package = Package(
             dependencies: [],
             path: "UnsplashPhotoPicker/UnsplashPhotoPicker",
             exclude: ["Info.plist", "Classes/UnsplashPhotoPicker.h"]
+        ),
+        .testTarget(
+            name: "UnsplashPhotoPickerTests",
+            dependencies: ["UnsplashPhotoPicker"],
+            path: "Tests/UnsplashPhotoPickerTests"
         )
     ]
 )

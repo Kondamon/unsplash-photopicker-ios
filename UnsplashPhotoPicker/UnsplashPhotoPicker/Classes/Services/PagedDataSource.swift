@@ -41,6 +41,9 @@ class PagedDataSource {
     private var cursor: UnsplashPagedRequest.Cursor
     private(set) var isFetching = false
     private var canFetchMore = true
+    /// The only request whose page may still be applied. `reset()` and `cancelFetch()` clear it,
+    /// so a response that arrives after a new search can no longer reach the collection view.
+    private var activeRequest: UnsplashPagedRequest?
     private lazy var operationQueue = OperationQueue(with: "com.unsplash.pagedDataSource")
 
     weak var delegate: PagedDataSourceDelegate?
@@ -52,6 +55,7 @@ class PagedDataSource {
 
     func reset() {
         operationQueue.cancelAllOperations()
+        activeRequest = nil
         items.removeAll()
         isFetching = false
         canFetchMore = true
@@ -75,29 +79,12 @@ class PagedDataSource {
         isFetching = true
 
         let request = factory.request(with: cursor)
-        request.completionBlock = {
-            if let error = request.error {
-                self.isFetching = false
-                self.fetchDidComplete(withItems: nil, error: error)
-                return
+        activeRequest = request
+        // Apply the page on the main thread, the thread UICollectionView reads `items` on.
+        request.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                self?.requestDidFinish(request)
             }
-
-            guard let items = request.items as? [UnsplashPhoto] else {
-                self.isFetching = false
-                self.fetchDidComplete(withItems: nil, error: DataSourceError.wrongItemsType(request.items))
-                return
-            }
-
-            if items.count < self.cursor.perPage {
-                self.canFetchMore = false
-            } else {
-                self.cursor = request.nextCursor()
-            }
-
-            self.items.append(contentsOf: items)
-
-            self.isFetching = false
-            self.fetchDidComplete(withItems: items, error: nil)
         }
 
         operationQueue.addOperationWithDependencies(request)
@@ -105,6 +92,7 @@ class PagedDataSource {
 
     func cancelFetch() {
         operationQueue.cancelAllOperations()
+        activeRequest = nil
         isFetching = false
     }
 
@@ -117,6 +105,32 @@ class PagedDataSource {
     }
 
     // MARK: - Private
+
+    private func requestDidFinish(_ request: UnsplashPagedRequest) {
+        // Cancelled by a new search or reset: this page belongs to nothing on screen.
+        guard request === activeRequest else { return }
+        activeRequest = nil
+        isFetching = false
+
+        if let error = request.error {
+            fetchDidComplete(withItems: nil, error: error)
+            return
+        }
+
+        guard let items = request.items as? [UnsplashPhoto] else {
+            fetchDidComplete(withItems: nil, error: DataSourceError.wrongItemsType(request.items))
+            return
+        }
+
+        if items.count < cursor.perPage {
+            canFetchMore = false
+        } else {
+            cursor = request.nextCursor()
+        }
+
+        self.items.append(contentsOf: items)
+        fetchDidComplete(withItems: items, error: nil)
+    }
 
     private func fetchDidComplete(withItems items: [UnsplashPhoto]?, error: Error?) {
         self.error = error
