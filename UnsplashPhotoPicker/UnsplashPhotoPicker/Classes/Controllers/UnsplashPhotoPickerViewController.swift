@@ -350,6 +350,20 @@ class UnsplashPhotoPickerViewController: UIViewController {
         }
     }
 
+    /// Inserts exactly the items the data source holds beyond what the collection view shows,
+    /// so the count after the update always matches `numberOfItemsInSection`.
+    private func insertNewItems() {
+        let displayedCount = collectionView.numberOfItems(inSection: 0)
+        let itemCount = dataSource.items.count
+        guard collectionView.window != nil, displayedCount < itemCount else {
+            reloadData()
+            return
+        }
+
+        let newIndexPaths = (displayedCount..<itemCount).map { IndexPath(item: $0, section: 0) }
+        collectionView.insertItems(at: newIndexPaths)
+    }
+
     // MARK: - Notifications
 
     @objc func keyboardWillShowNotification(_ notification: Notification) {
@@ -431,20 +445,6 @@ extension UnsplashPhotoPickerViewController: PagedDataSourceDelegate {
         spinner.stopAnimating()
         hideEmptyView()
         insertNewItems()
-    }
-
-    /// Inserts exactly the items the data source holds beyond what the collection view shows,
-    /// so the count after the update always matches `numberOfItemsInSection`.
-    private func insertNewItems() {
-        let displayedCount = collectionView.numberOfItems(inSection: 0)
-        let itemCount = dataSource.items.count
-        guard collectionView.window != nil, displayedCount < itemCount else {
-            reloadData()
-            return
-        }
-
-        let newIndexPaths = (displayedCount..<itemCount).map { IndexPath(item: $0, section: 0) }
-        collectionView.insertItems(at: newIndexPaths)
     }
 
     func dataSource(_ dataSource: PagedDataSource, fetchDidFailWithError error: Error) {

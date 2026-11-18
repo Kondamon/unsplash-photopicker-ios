@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import XCTest
 @testable import UnsplashPhotoPicker
 
 /// A paged request that never touches the network. It blocks until `release()`
